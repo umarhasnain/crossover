@@ -58,14 +58,13 @@ export default function LoginForm() {
 
   });
 
-  console.log("formData====>",form)
   
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-red-700 via-black to-red-700 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-black via-red-700 to-black px-4">
       <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-8 text-center">
         <div className="flex justify-center mb-6">
           <Image
@@ -75,7 +74,7 @@ export default function LoginForm() {
             height={100}
           />
         </div>
-        <h2 className="text-2xl font-bold text-red-600 mb-6">Create Account</h2>
+        <h2 className="text-2xl font-bold text-red-600 mb-6">Welcome Back</h2>
         <form className="space-y-5">
          
           <InputField
@@ -103,7 +102,7 @@ export default function LoginForm() {
         </form>
         <p className="mt-4 text-sm text-gray-600">
           Don't have an account?{" "}
-          <Link href="/register" className="text-red-600 font-semibold hover:underline">
+          <Link href="/sign-up" className="text-red-600 font-semibold hover:underline">
             Sign Up
           </Link>
         </p>

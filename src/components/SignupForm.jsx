@@ -58,7 +58,7 @@ export default function SignupForm() {
     confirm: "",
   });
 
-  console.log("formData====>",form)
+
   
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -115,7 +115,7 @@ export default function SignupForm() {
         </form>
         <p className="mt-4 text-sm text-gray-600">
           Already have an account?{" "}
-          <Link href="/signin" className="text-red-600 font-semibold hover:underline">
+          <Link href="/sign-in" className="text-red-600 font-semibold hover:underline">
             Sign In
           </Link>
         </p>
