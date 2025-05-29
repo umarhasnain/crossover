@@ -21,7 +21,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </button>
             </div>
             <nav className="flex flex-col space-y-4 p-4 text-base ">
-                <Link onClick={onClose} href="#" className='flex items-center gap-4'>
+                <Link onClick={onClose} href="/userDashboard" className='flex items-center gap-4'>
                     <DashboardIcon />
                     Dashboard
                 </Link>

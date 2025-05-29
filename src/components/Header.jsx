@@ -3,11 +3,30 @@ import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Menu } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        window.location.href = '/sign-in'; 
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      alert('Something went wrong during logout');
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -44,7 +63,7 @@ const Header = () => {
 
           {/* Center Nav Links: Only md+ */}
           <div className="hidden md:flex gap-6 font-medium text-sm mx-auto">
-            <a href="#" className="hover:underline">Dashboard</a>
+            <Link href="/userDashboard" className="hover:underline">Dashboard</Link>
             <a href="#" className="hover:underline">Players</a>
             <a href="#" className="hover:underline">About</a>
           </div>
@@ -61,18 +80,24 @@ const Header = () => {
             {/* Dropdown Menu */}
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-36 bg-white text-[#471300] rounded shadow-md overflow-hidden">
-                <a
+                <Link
                   href="/profile"
                   className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  onClick={() => setDropdownOpen(false)} // close dropdown on navigation
                 >
                   Profile
-                </a>
-                <a
-                  href="/logout"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                </Link>
+                {/* Use a button instead of Link for logout */}
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setDropdownOpen(false); 
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  type="button"
                 >
                   Logout
-                </a>
+                </button>
               </div>
             )}
           </div>
