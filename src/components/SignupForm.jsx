@@ -3,6 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
 
 const InputField = ({ label, type = "text", value, onChange, name, showToggle = false }) => {
   const [focused, setFocused] = useState(false);
@@ -58,7 +59,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (form.password !== form.confirm) {
-    alert("Passwords do not match!");
+    toast.error("Passwords do not match!");
     return;
   }
 
@@ -76,7 +77,7 @@ const handleSubmit = async (e) => {
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error || "Signup failed.");
+      toast.error(data.error || "Signup failed.");
       return;
     }
 
@@ -89,14 +90,14 @@ const handleSubmit = async (e) => {
     });
 
     if (signInResult?.error) {
-      alert("Login after signup failed: " + signInResult.error);
+      toast.error("Login after signup failed: " + signInResult.error);
     } else {
-      alert("✅ Account created and logged in!");
+      toast.success("Account created and logged in!");
       window.location.href = "/payment"; // redirect to homepage or dashboard
     }
   } catch (error) {
     console.error("Signup error:", error);
-    alert("Something went wrong. Try again.");
+    toast.error("Something went wrong. Try again.");
   }
 };
 

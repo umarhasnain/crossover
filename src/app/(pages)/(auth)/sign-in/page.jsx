@@ -1,10 +1,10 @@
-import LoginForm from '@/components/SigninForm'
+import SigninForm from '@/components/SigninForm'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-      <LoginForm/>
+      <SigninForm/>
     </div>
   )
 }

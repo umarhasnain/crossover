@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 const InputField = ({ label, type = 'text', value, onChange, name, showToggle = false }) => {
@@ -68,15 +69,18 @@ export default function SigninForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage(data.error || 'Something went wrong');
+        // setMessage(data.error || 'Something went wrong');
+        toast.error(data.error || 'Something went wrong');
       } else {
-        setMessage('Sign in successful!');
+        // setMessage('Sign in successful!');
+        toast.success('Sign in successful!')
         // Redirect to protected route
         router.push('/payment');
       }
     } catch (error) {
       console.error('Sign-in error:', error);
-      setMessage('Something went wrong');
+      // setMessage('Something went wrong');
+      toast.error('Something went wrong');
     } finally {
       setLoading(false);
     }
