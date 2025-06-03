@@ -67,7 +67,7 @@ const PaymentPage = () => {
               onClick={() => handlePackageSelect(pkg)}
             >
               <h3 className="text-xl font-bold text-[#471300] mb-2">{pkg.name}</h3>
-              <p className="text-lg font-semibold mb-4">PKR {pkg.price}</p>
+              <p className="text-lg font-semibold mb-4">$ {pkg.price}</p>
               <ul className="text-sm space-y-1 text-gray-700">
                 {pkg.features.map((feat, idx) => (
                   <li key={idx}>• {feat}</li>

@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { connectDB } from '@/lib/mongodb.js';
-import { User } from '@/(backend)/models/user.js';
+import { User } from '@/backend/models/user.js';
 
 export default NextAuth({
     session: {

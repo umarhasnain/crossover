@@ -64,8 +64,8 @@ const Header = () => {
           {/* Center Nav Links: Only md+ */}
           <div className="hidden md:flex gap-6 font-medium text-sm mx-auto">
             <Link href="/userDashboard" className="hover:underline">Dashboard</Link>
+            <Link href="/about" className="hover:underline">About</Link>
             <a href="#" className="hover:underline">Players</a>
-            <a href="#" className="hover:underline">About</a>
           </div>
 
           {/* Right: Avatar with Dropdown */}

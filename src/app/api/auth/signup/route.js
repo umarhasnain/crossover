@@ -1,6 +1,6 @@
 import { hash } from 'bcryptjs';
 import { connectDB } from '@/lib/mongodb.js';
-import { User } from '@/(backend)/models/user.js';
+import { User } from '@/backend/models/user.js';
 
 export async function POST(req) {
   try {

@@ -1,5 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
-import { User } from '@/(backend)/models/user';
+import { User } from '@/backend/models/user';
 import { compare } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
