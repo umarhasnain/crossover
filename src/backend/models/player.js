@@ -9,6 +9,7 @@ const PlayerSchema = new mongoose.Schema({
   state: String,
   height: String,
   position: String,
+  year: String,
 });
 
 export default mongoose.models.Player || mongoose.model('Player', PlayerSchema);
