@@ -62,10 +62,10 @@ const Header = () => {
           </div>
 
           {/* Center Nav Links: Only md+ */}
-          <div className="hidden md:flex gap-6 font-medium text-sm mx-auto">
-            <Link href="/userDashboard" className="hover:underline">Dashboard</Link>
+          <div className="hidden md:flex gap-6 font-medium text-md mx-auto">
+            <Link href="/dashboard" className="hover:underline">Dashboard</Link>
+            <Link href="/players" className="hover:underline">Players</Link>
             <Link href="/about" className="hover:underline">About</Link>
-            <a href="#" className="hover:underline">Players</a>
           </div>
 
           {/* Right: Avatar with Dropdown */}
