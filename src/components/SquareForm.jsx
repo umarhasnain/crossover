@@ -10,6 +10,7 @@ export default function SquareForm() {
   useEffect(() => {
     if (window.Square) {
       initializeSquare();
+
     } else {
       const interval = setInterval(() => {
         if (window.Square) {
