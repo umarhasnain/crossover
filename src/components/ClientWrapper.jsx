@@ -1,7 +1,19 @@
-// components/ClientWrapper.jsx
-"use client";
-import { PlayerProvider } from "@/context/PlayerContext";
+'use client';
 
-export default function ClientWrapper({ children }) {
-  return <PlayerProvider>{children}</PlayerProvider>;
-}
+import { PlayerProvider } from "@/context/PlayerContext";
+import { UserProvider } from "@/context/UserContext";
+// import ProtectedRoutes from "@/components/HOC/ProtectedRoute.jsx";
+
+const ClientWrapper = ({ children }) => {
+  return (
+    <UserProvider>
+      <PlayerProvider>
+        {/* <ProtectedRoutes> */}
+          {children}
+          {/* </ProtectedRoutes> */}
+      </PlayerProvider>
+    </UserProvider>
+  );
+};
+
+export default ClientWrapper;

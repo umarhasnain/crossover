@@ -54,37 +54,39 @@ export default function SigninForm() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage('');
 
-    try {
-      const res = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+  try {
+    const res = await fetch('/api/auth/signin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        // setMessage(data.error || 'Something went wrong');
-        toast.error(data.error || 'Something went wrong');
+    if (!res.ok) {
+      toast.error(data.error || 'Something went wrong');
+    } else {
+      toast.success('Sign in successful!');
+
+      // ✅ Redirect based on email
+      if (form.email === "crossoveradmin01@gmail.com") {
+        router.push('/admin');
       } else {
-        // setMessage('Sign in successful!');
-        toast.success('Sign in successful!')
-        // Redirect to protected route
-        router.push('/payment');
+        router.push('/dashboard');
       }
-    } catch (error) {
-      console.error('Sign-in error:', error);
-      // setMessage('Something went wrong');
-      toast.error('Something went wrong');
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    console.error('Sign-in error:', error);
+    toast.error('Something went wrong');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-black via-red-700 to-black px-4">

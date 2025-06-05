@@ -1,31 +1,63 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
-export default function ProtectedRoute({ children }) {
+const ProtectedRoutes = ({ children }) => {
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(true);
+  const pathname = usePathname();
+  const { isAuthenticated, isPaid, user } = useUser();
 
   useEffect(() => {
-    // Get the token cookie string like "token=xyz"
-    const tokenCookie = document.cookie
-      .split('; ')
-      .find((cookie) => cookie.startsWith('token='));
+    // Don't run until context is ready
+    if (isAuthenticated === null || isPaid === null) return;
 
-    // Extract the token value if cookie exists
-    const token = tokenCookie ? tokenCookie.split('=')[1] : null;
+    const protectedRoutes = ["/dashboard", "/players", "/admin"];
+    const onProtectedRoute = protectedRoutes.some((route) =>
+      pathname.startsWith(route)
+    );
 
-    if (!token) {
-      router.push('/sign-in');
-    } else {
-      setIsChecking(false);
+    // ✅ 1. Not Authenticated? Force login.
+    if (!isAuthenticated && pathname !== "/sign-in") {
+      router.replace("/sign-in");
+      return;
     }
-  }, [router]);
 
-  if (isChecking) {
-    return <p>Loading...</p>; 
+    // ✅ 2. Admin redirect only on sign-in or dashboard
+    if (
+      isAuthenticated &&
+      user?.email === "crossoveradmin01@gmail.com" &&
+      (pathname === "/sign-in" || pathname === "/dashboard")
+    ) {
+      router.replace("/admin");
+      return;
+    }
+
+    // ✅ 3. Unpaid user accessing protected? Send to /payment
+    if (
+      isAuthenticated &&
+      onProtectedRoute &&
+      !isPaid &&
+      pathname !== "/payment"
+    ) {
+      router.replace("/payment");
+      return;
+    }
+
+    // ✅ 4. Paid user on /payment? Redirect to dashboard
+    if (isAuthenticated && isPaid && pathname === "/payment") {
+      router.replace("/dashboard");
+      return;
+    }
+  }, [pathname, isAuthenticated, isPaid, user, router]);
+
+  // 🔄 Show loading until user status is determined
+  if (isAuthenticated === null || isPaid === null) {
+    return <div>Loading...</div>;
   }
 
   return <>{children}</>;
-}
+};
+
+export default ProtectedRoutes;
