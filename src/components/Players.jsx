@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState, useEffect } from 'react';
 import {
     Dialog,
@@ -9,10 +9,14 @@ import {
     TextField,
     MenuItem,
 } from '@mui/material';
-import { Eye, Trash2, Pencil } from 'lucide-react';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Pencil, Trash2 } from 'lucide-react';
 import axios from 'axios';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import toast from 'react-hot-toast';
+import dayjs from 'dayjs';
 
 export default function Players() {
     const [open, setOpen] = useState(false);
@@ -28,6 +32,8 @@ export default function Players() {
         height: '',
         position: '',
         year: '',
+        evaluation: '',
+        evaluationDate: dayjs(),
     });
 
     const [players, setPlayers] = useState([]);
@@ -38,12 +44,21 @@ export default function Players() {
     }, []);
 
     const fetchPlayers = async () => {
-        const res = await axios.get('/api/players');
-        setPlayers(res.data);
+        try {
+            const res = await axios.get('/api/players');
+            setPlayers(res.data);
+        } catch (error) {
+            toast.error("Failed to fetch players");
+            console.error(error);
+        }
     };
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleDateChange = (newDate) => {
+        setForm({ ...form, evaluationDate: newDate });
     };
 
     const resetForm = () => {
@@ -56,40 +71,60 @@ export default function Players() {
             height: '',
             position: '',
             year: '',
+            evaluation: '',
+            evaluationDate: dayjs(),
         });
         setIsEditMode(false);
         setEditingPlayerId(null);
     };
 
     const handleSubmit = async () => {
-        if (isEditMode && editingPlayerId) {
-            await axios.put(`/api/players/${editingPlayerId}`, form);
-            toast.success("Player updated successfully!");
-        } else {
-            await axios.post('/api/players', form);
-            toast.success("Player added successfully!");
-        }
+        try {
+            const payload = {
+                ...form,
+                evaluationDate: form.evaluationDate ? form.evaluationDate.toISOString() : null,
+            };
 
-        setOpen(false);
-        resetForm();
-        fetchPlayers();
+            if (isEditMode && editingPlayerId) {
+                await axios.put(`/api/players/${editingPlayerId}`, payload);
+                toast.success("Player updated successfully!");
+            } else {
+                await axios.post('/api/players', payload);
+                toast.success("Player added successfully!");
+            }
+
+            setOpen(false);
+            resetForm();
+            fetchPlayers();
+        } catch (error) {
+            toast.error("Failed to save player");
+            console.error(error);
+        }
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`/api/players/${id}`);
-        fetchPlayers();
+        try {
+            await axios.delete(`/api/players/${id}`);
+            toast.success("Player deleted");
+            fetchPlayers();
+        } catch (error) {
+            toast.error("Failed to delete player");
+            console.error(error);
+        }
     };
 
     const handleEdit = (player) => {
         setForm({
-            name: player.name,
-            highSchool: player.highSchool,
-            organisation: player.organisation,
-            grade: player.grade,
-            state: player.state,
-            height: player.height,
-            position: player.position,
-            year: player.year,
+            name: player.name || '',
+            highSchool: player.highSchool || '',
+            organisation: player.organisation || '',
+            grade: player.grade || '',
+            state: player.state || '',
+            height: player.height || '',
+            position: player.position || '',
+            year: player.year || '',
+            evaluation: player.evaluation || '',
+            evaluationDate: player.evaluationDate ? dayjs(player.evaluationDate) : dayjs(),
         });
         setEditingPlayerId(player._id);
         setIsEditMode(true);
@@ -149,13 +184,18 @@ export default function Players() {
                             <th className="p-2 text-left">Height</th>
                             <th className="p-2 text-left">Position</th>
                             <th className="p-2 text-left">Year</th>
+                            <th className="p-2 text-left">Evaluation</th>
+                            <th className="p-2 text-left">Evaluation Date</th>
                             <th className="p-2 text-left">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredPlayers.map((player) => (
                             <tr key={player._id} className="border-t">
-                                <td className="p-2"><AccountCircleIcon />{player.name}</td>
+                                <td className="p-2 flex items-center gap-1">
+                                    <AccountCircleIcon />
+                                    {player.name}
+                                </td>
                                 <td className="p-2">{player.highSchool}</td>
                                 <td className="p-2">{player.organisation}</td>
                                 <td className="p-2">{player.grade}</td>
@@ -163,6 +203,8 @@ export default function Players() {
                                 <td className="p-2">{player.height}</td>
                                 <td className="p-2">{player.position}</td>
                                 <td className="p-2">{player.year || 'N/A'}</td>
+                                <td className="p-2">{player.evaluation || '-'}</td>
+                                <td className="p-2">{player.evaluationDate ? dayjs(player.evaluationDate).format('YYYY-MM-DD') : '-'}</td>
                                 <td className="p-2 flex gap-2">
                                     <Pencil
                                         className="cursor-pointer text-blue-600"
@@ -179,57 +221,76 @@ export default function Players() {
                 </table>
             </div>
 
-            <Dialog
-                open={open}
-                onClose={() => {
-                    setOpen(false);
-                    resetForm();
-                }}
-                fullWidth
-                maxWidth="sm"
-                scroll="paper"
-            >
-                <DialogTitle className="mt-2 text-lg font-semibold">
-                    {isEditMode ? 'Edit Player' : 'Add New Player'}
-                </DialogTitle>
-
-                <DialogContent
-                    dividers
-                    className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto"
-                >
-                    <TextField label="Name" name="name" value={form.name} onChange={handleChange} fullWidth />
-                    <TextField label="High School" name="highSchool" value={form.highSchool} onChange={handleChange} fullWidth />
-                    <TextField label="Organisation" name="organisation" value={form.organisation} onChange={handleChange} fullWidth />
-                    <TextField label="Grade" name="grade" value={form.grade} onChange={handleChange} fullWidth />
-                    <TextField label="State" name="state" value={form.state} onChange={handleChange} fullWidth />
-                    <TextField label="Height" name="height" value={form.height} onChange={handleChange} fullWidth />
-                    <TextField label="Position" name="position" value={form.position} onChange={handleChange} fullWidth />
-                    <TextField
-                        select
-                        label="Year"
-                        name="year"
-                        value={form.year}
-                        onChange={handleChange}
-                        fullWidth
-                    >
-                        {[2024, 2025, 2026, 2027].map((year) => (
-                            <MenuItem key={year} value={year}>
-                                {year}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </DialogContent>
-
-                <DialogActions className="px-6 pb-4">
-                    <Button onClick={() => {
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Dialog
+                    open={open}
+                    onClose={() => {
                         setOpen(false);
                         resetForm();
-                    }}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSubmit}>
-                        {isEditMode ? 'Update' : 'Save'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                    }}
+                    fullWidth
+                    maxWidth="sm"
+                    scroll="paper"
+                >
+                    <DialogTitle className="mt-2 text-lg font-semibold">
+                        {isEditMode ? 'Edit Player' : 'Add New Player'}
+                    </DialogTitle>
+
+                    <DialogContent
+                        dividers
+                        className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto"
+                    >
+                        <TextField label="Name" name="name" value={form.name} onChange={handleChange} fullWidth />
+                        <TextField label="High School" name="highSchool" value={form.highSchool} onChange={handleChange} fullWidth />
+                        <TextField label="Organisation" name="organisation" value={form.organisation} onChange={handleChange} fullWidth />
+                        <TextField label="Grade" name="grade" value={form.grade} onChange={handleChange} fullWidth />
+                        <TextField label="State" name="state" value={form.state} onChange={handleChange} fullWidth />
+                        <TextField label="Height" name="height" value={form.height} onChange={handleChange} fullWidth />
+                        <TextField label="Position" name="position" value={form.position} onChange={handleChange} fullWidth />
+                        <TextField
+                            select
+                            label="Year"
+                            name="year"
+                            value={form.year}
+                            onChange={handleChange}
+                            fullWidth
+                        >
+                            {[2024, 2025, 2026, 2027].map((year) => (
+                                <MenuItem key={year} value={year}>
+                                    {year}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            label="Evaluation"
+                            name="evaluation"
+                            value={form.evaluation}
+                            onChange={handleChange}
+                            multiline
+                            rows={3}
+                            fullWidth
+                        />
+
+                        <DatePicker
+                            label="Evaluation Date"
+                            value={form.evaluationDate}
+                            onChange={handleDateChange}
+                            slotProps={{ textField: { fullWidth: true } }}
+                        />
+                    </DialogContent>
+
+                    <DialogActions className="px-6 pb-4">
+                        <Button onClick={() => {
+                            setOpen(false);
+                            resetForm();
+                        }}>Cancel</Button>
+                        <Button variant="contained" onClick={handleSubmit}>
+                            {isEditMode ? 'Update' : 'Save'}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </LocalizationProvider>
         </div>
     );
 }

@@ -1,12 +1,16 @@
 
 import MainSection from '@/components/MainSection'
+import { PlayerProvider } from '@/context/PlayerContext'
 import React from 'react'
 
 const page = () => {
   return (
-    <div>
-      <MainSection/>
-    </div>
+    <PlayerProvider>
+      <div>
+        <MainSection />
+      </div>
+    </PlayerProvider>
+
   )
 }
 
