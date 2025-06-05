@@ -1,7 +1,9 @@
+// src/app/layout.js
 import ClientWrapper from "@/components/ClientWrapper";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +22,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html>
+    <html lang="en">
+      <head />
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {/* ✅ Load Square SDK globally */}
+        <Script
+          src="https://sandbox.web.squarecdn.com/v1/square.js"
+          strategy="beforeInteractive"
+        />
         <ClientWrapper>
           {children}
           <Toaster position="top-center" reverseOrder={false} />
