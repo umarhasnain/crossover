@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* ✅ Load Square SDK globally */}
         <Script
-          src="https://web.squarecdn.com/v1/square.js"
+          src="https://sandbox.web.squarecdn.com/v1/square.js"
           strategy="beforeInteractive"
         />
         <ClientWrapper>

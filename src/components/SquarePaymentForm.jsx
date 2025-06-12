@@ -1,19 +1,31 @@
+
 'use client';
 
 import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 export default function SquarePaymentForm({ amount, name, email, packageName }) {
-  const handlePayment = useCallback(async (tokenResult) => {
-    try {
-      const token = tokenResult.token;
-      if (!token) throw new Error("Token not received from Square.");
+  const [loading, setLoading] = useState(false);
 
+  const handlePayment = useCallback(async (tokenResult) => {
+    if (tokenResult.errors) {
+      console.error('❌ Square Tokenization Error:', tokenResult.errors);
+      alert('Card validation failed. Please check your input.');
+      return;
+    }
+
+    const token = tokenResult.token;
+    if (!token) {
+      alert('❌ Token not received from Square.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
       const res = await fetch('/api/payment', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sourceId: token,
           amount,
@@ -23,18 +35,21 @@ export default function SquarePaymentForm({ amount, name, email, packageName }) 
         }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        console.error('❌ Payment failed:', data);
+        const errorText = await res.text();
+        console.error("❌ Server error response:", errorText);
+        alert('Server error occurred during payment. Please try again.');
         return;
       }
 
+      const data = await res.json();
       console.log('✅ Payment successful:', data);
       alert('✅ Payment successful! Thank you.');
     } catch (err) {
-      console.error('❌ Unexpected error:', err);
+      console.error('❌ Unexpected fetch error:', err);
       alert('Payment failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }, [amount, name, email, packageName]);
 
@@ -48,6 +63,8 @@ export default function SquarePaymentForm({ amount, name, email, packageName }) 
       >
         <CreditCard />
       </PaymentForm>
+
+      {loading && <p className="text-blue-500 mt-4">Processing payment...</p>}
     </div>
   );
 }

@@ -23,6 +23,7 @@
     "cookie": "^1.0.2",
     "crypto": "^1.0.1",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.511.0",
     "mongoose": "^8.15.1",
@@ -34,7 +35,7 @@
     "react-hot-toast": "^2.5.2",
     "react-square-web-payments-sdk": "^3.2.4-beta.1",
     "react-toastify": "^11.0.5",
-    "square": "^42.3.0",
+    "square": "^35.1.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
